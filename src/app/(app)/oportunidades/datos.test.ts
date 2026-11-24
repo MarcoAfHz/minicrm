@@ -27,8 +27,12 @@ vi.mock("@/lib/supabase/server", () => ({
   crearSupabaseServidor: async () => ({ from }),
 }));
 
-const { listarOportunidades, listarOportunidadesDeCliente, obtenerOportunidad } =
-  await import("./datos");
+const {
+  listarOportunidades,
+  listarOportunidadesDeCliente,
+  listarOportunidadesPanel,
+  obtenerOportunidad,
+} = await import("./datos");
 
 const ID = "3f2b8c1e-9d4a-4c6b-8e2f-1a2b3c4d5e6f";
 const ID_CLIENTE = "7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d";
@@ -53,6 +57,36 @@ describe("listarOportunidades", () => {
     respuestaBd = { data: null, error: { message: "permission denied" } };
 
     await expect(listarOportunidades("u1")).rejects.toThrow(
+      "No se han podido cargar las oportunidades.",
+    );
+  });
+});
+
+describe("listarOportunidadesPanel", () => {
+  it("lee en una sola consulta las oportunidades del usuario, con su cliente", async () => {
+    const fila = {
+      id: ID,
+      titulo: "Web",
+      importe: "1500.00",
+      etapa: "propuesta",
+      fecha_cierre_prevista: null,
+      ganada_at: null,
+      cliente: { id: ID_CLIENTE, nombre: "Ana" },
+    };
+    respuestaBd = { data: [fila], error: null };
+
+    await expect(listarOportunidadesPanel("u1")).resolves.toEqual([fila]);
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(llamadas[0]).toContain("ganada_at");
+    expect(llamadas[0]).not.toContain("updated_at");
+    expect(llamadas[0]).toContain("cliente:clientes(id, nombre)");
+    expect(llamadas).toContain("oportunidades: eq owner_id u1");
+  });
+
+  it("lanza un error genérico si falla la base de datos", async () => {
+    respuestaBd = { data: null, error: { message: "permission denied" } };
+
+    await expect(listarOportunidadesPanel("u1")).rejects.toThrow(
       "No se han podido cargar las oportunidades.",
     );
   });

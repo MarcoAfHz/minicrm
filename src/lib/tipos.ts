@@ -52,6 +52,11 @@ export type Oportunidad = {
   created_at: string;
   /** Fecha ISO con zona horaria (timestamptz). */
   updated_at: string;
+  /**
+   * Cuándo pasó a «ganada» (timestamptz), o null si no está ganada. Lo pone
+   * solo un trigger de la base de datos: la app no lo escribe nunca.
+   */
+  ganada_at: string | null;
 };
 
 /** Lo que el usuario puede escribir de una oportunidad en el formulario. */
@@ -77,3 +82,11 @@ export type OportunidadConCliente = OportunidadResumen & {
 
 /** Cliente que se puede elegir en el desplegable del formulario de oportunidad. */
 export type ClienteOpcion = Pick<Cliente, "id" | "nombre" | "empresa">;
+
+/** Oportunidad con lo que necesita el panel: cifras, próximos cierres y su cliente. */
+export type OportunidadPanel = Pick<
+  Oportunidad,
+  "id" | "titulo" | "importe" | "etapa" | "fecha_cierre_prevista" | "ganada_at"
+> & {
+  cliente: Pick<Cliente, "id" | "nombre"> | null;
+};

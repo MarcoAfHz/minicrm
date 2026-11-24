@@ -25,6 +25,8 @@ export type BaseDatos = {
       };
       oportunidades: {
         Row: Oportunidad;
+        // ganada_at no está en Insert ni en Update a propósito: lo pone el
+        // trigger oportunidades_ganada_at, que ignora lo que envíe la app.
         Insert: DatosOportunidad & {
           id?: string;
           owner_id?: string;

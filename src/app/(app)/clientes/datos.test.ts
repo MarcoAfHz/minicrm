@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-type RespuestaBd = { data: unknown; error: { message: string } | null };
+type RespuestaBd = {
+  data: unknown;
+  count?: number | null;
+  error: { message: string } | null;
+};
 
 const from = vi.fn();
 const llamadas: string[] = [];
@@ -9,7 +13,8 @@ let respuestaBd: RespuestaBd = { data: null, error: null };
 /** Imita el constructor de consultas de Supabase: encadenable y awaitable. */
 function consulta() {
   const builder = {
-    select: () => anotar("select"),
+    select: (_columnas?: string, opciones?: { count?: string; head?: boolean }) =>
+      anotar(opciones ? `select ${JSON.stringify(opciones)}` : "select"),
     eq: (columna: string, valor: string) => anotar(`eq ${columna} ${valor}`),
     order: (columna: string) => anotar(`order ${columna}`),
     limit: (cantidad: number) => anotar(`limit ${cantidad}`),
@@ -28,9 +33,8 @@ vi.mock("@/lib/supabase/server", () => ({
   crearSupabaseServidor: async () => ({ from }),
 }));
 
-const { listarOpcionesClientes, obtenerCliente, tieneClientes } = await import(
-  "./datos"
-);
+const { contarClientes, listarOpcionesClientes, obtenerCliente, tieneClientes } =
+  await import("./datos");
 
 const ID = "3f2b8c1e-9d4a-4c6b-8e2f-1a2b3c4d5e6f";
 
@@ -116,6 +120,34 @@ describe("tieneClientes", () => {
     respuestaBd = { data: null, error: { message: "permission denied" } };
 
     await expect(tieneClientes("u1")).rejects.toThrow(
+      "No se han podido cargar los clientes.",
+    );
+  });
+});
+
+describe("contarClientes", () => {
+  it("cuenta solo los clientes del usuario, sin descargar las filas", async () => {
+    respuestaBd = { data: null, count: 3, error: null };
+
+    await expect(contarClientes("u1")).resolves.toBe(3);
+    expect(llamadas).toEqual([
+      'select {"count":"exact","head":true}',
+      "eq owner_id u1",
+    ]);
+  });
+
+  it("devuelve 0 si no tiene clientes o no llega el número", async () => {
+    respuestaBd = { data: null, count: 0, error: null };
+    await expect(contarClientes("u1")).resolves.toBe(0);
+
+    respuestaBd = { data: null, count: null, error: null };
+    await expect(contarClientes("u1")).resolves.toBe(0);
+  });
+
+  it("lanza un error genérico si falla la base de datos", async () => {
+    respuestaBd = { data: null, count: null, error: { message: "permission denied" } };
+
+    await expect(contarClientes("u1")).rejects.toThrow(
       "No se han podido cargar los clientes.",
     );
   });

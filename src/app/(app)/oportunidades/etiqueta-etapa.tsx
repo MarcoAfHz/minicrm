@@ -1,27 +1,40 @@
 import { ETIQUETAS_ETAPA } from "@/lib/embudo";
 import type { Etapa } from "@/lib/tipos";
 
-/** Colores de cada etapa: los usan las etiquetas y las columnas del tablero. */
-export const COLORES_ETAPA: Record<Etapa, { etiqueta: string; borde: string }> =
-  {
-    nuevo: {
-      etiqueta: "bg-zinc-100 text-zinc-800",
-      borde: "border-t-zinc-400",
-    },
-    contactado: {
-      etiqueta: "bg-sky-100 text-sky-800",
-      borde: "border-t-sky-500",
-    },
-    propuesta: {
-      etiqueta: "bg-amber-100 text-amber-900",
-      borde: "border-t-amber-500",
-    },
-    ganada: {
-      etiqueta: "bg-emerald-100 text-emerald-800",
-      borde: "border-t-emerald-600",
-    },
-    perdida: { etiqueta: "bg-red-100 text-red-800", borde: "border-t-red-500" },
-  };
+/**
+ * Colores de cada etapa: los usan las etiquetas, las columnas del tablero y las
+ * barras del resumen del panel.
+ */
+export const COLORES_ETAPA: Record<
+  Etapa,
+  { etiqueta: string; borde: string; barra: string }
+> = {
+  nuevo: {
+    etiqueta: "bg-zinc-100 text-zinc-800",
+    borde: "border-t-zinc-400",
+    barra: "bg-zinc-400",
+  },
+  contactado: {
+    etiqueta: "bg-sky-100 text-sky-800",
+    borde: "border-t-sky-500",
+    barra: "bg-sky-500",
+  },
+  propuesta: {
+    etiqueta: "bg-amber-100 text-amber-900",
+    borde: "border-t-amber-500",
+    barra: "bg-amber-500",
+  },
+  ganada: {
+    etiqueta: "bg-emerald-100 text-emerald-800",
+    borde: "border-t-emerald-600",
+    barra: "bg-emerald-600",
+  },
+  perdida: {
+    etiqueta: "bg-red-100 text-red-800",
+    borde: "border-t-red-500",
+    barra: "bg-red-500",
+  },
+};
 
 /** La etapa de una oportunidad como una etiqueta de color. */
 export function EtiquetaEtapa({ etapa }: { etapa: Etapa }) {

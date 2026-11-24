@@ -25,7 +25,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - Crear y editar una oportunidad (con el cliente elegido de un desplegable) y cambiarla de etapa desde la tarjeta.
 - `src/lib/embudo.ts` con funciones puras para agrupar por etapa y sumar importes, con tests.
 
-## [ ] 4. Panel
+## [x] 4. Panel (registro 04)
 - `/panel` con tarjetas:
   - importe en curso (etapas abiertas);
   - importe ganado este mes;

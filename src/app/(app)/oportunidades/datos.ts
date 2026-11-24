@@ -2,6 +2,7 @@ import { crearSupabaseServidor } from "@/lib/supabase/server";
 import type {
   Oportunidad,
   OportunidadConCliente,
+  OportunidadPanel,
   OportunidadResumen,
 } from "@/lib/tipos";
 import { esIdCliente } from "@/lib/validacion/cliente";
@@ -26,6 +27,29 @@ export async function listarOportunidades(
   const { data, error } = await supabase
     .from("oportunidades")
     .select(`${COLUMNAS_RESUMEN}, cliente:clientes(id, nombre)`)
+    .eq("owner_id", ownerId)
+    .order("fecha_cierre_prevista", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(ERROR_LECTURA);
+  }
+  return data;
+}
+
+/**
+ * Todas las oportunidades del usuario con lo que necesita el panel, en una sola
+ * consulta. Las cifras se calculan después con src/lib/metricas.ts.
+ */
+export async function listarOportunidadesPanel(
+  ownerId: string,
+): Promise<OportunidadPanel[]> {
+  const supabase = await crearSupabaseServidor();
+  const { data, error } = await supabase
+    .from("oportunidades")
+    .select(
+      "id, titulo, importe, etapa, fecha_cierre_prevista, ganada_at, cliente:clientes(id, nombre)",
+    )
     .eq("owner_id", ownerId)
     .order("fecha_cierre_prevista", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
@@ -73,7 +97,7 @@ export async function obtenerOportunidad(
   const { data, error } = await supabase
     .from("oportunidades")
     .select(
-      "id, owner_id, cliente_id, titulo, importe, etapa, fecha_cierre_prevista, created_at, updated_at",
+      "id, owner_id, cliente_id, titulo, importe, etapa, fecha_cierre_prevista, created_at, updated_at, ganada_at",
     )
     .eq("id", id)
     .eq("owner_id", ownerId)

@@ -71,6 +71,21 @@ export async function listarOpcionesClientes(
   return data;
 }
 
+/** Número total de clientes del usuario, sin descargar las filas. */
+export async function contarClientes(ownerId: string): Promise<number> {
+  const supabase = await crearSupabaseServidor();
+  const { count, error } = await supabase
+    .from("clientes")
+    .select("id", { count: "exact", head: true })
+    // Segunda defensa además de RLS: solo clientes del usuario.
+    .eq("owner_id", ownerId);
+
+  if (error) {
+    throw new Error(ERROR_LECTURA);
+  }
+  return count ?? 0;
+}
+
 /** Si el usuario tiene al menos un cliente. */
 export async function tieneClientes(ownerId: string): Promise<boolean> {
   const supabase = await crearSupabaseServidor();

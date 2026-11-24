@@ -1,3 +1,9 @@
+/**
+ * Zona horaria del negocio: las fechas con hora, "hoy" y "este mes" son los de
+ * España. La usan también los cálculos del panel (src/lib/metricas.ts).
+ */
+export const ZONA_HORARIA = "Europe/Madrid";
+
 const formatoEuros = new Intl.NumberFormat("es-ES", {
   style: "currency",
   currency: "EUR",
@@ -20,7 +26,7 @@ const formatoFechaSinHora = new Intl.DateTimeFormat("es-ES", {
 
 const formatoFechaConHora = new Intl.DateTimeFormat("es-ES", {
   ...opcionesFecha,
-  timeZone: "Europe/Madrid",
+  timeZone: ZONA_HORARIA,
 });
 
 const SIN_VALOR = "—";
@@ -44,4 +50,53 @@ export function formatearFecha(fecha: string | Date): string {
   return esSoloFecha
     ? formatoFechaSinHora.format(valor)
     : formatoFechaConHora.format(valor);
+}
+
+const formatoPorcentaje = new Intl.NumberFormat("es-ES", {
+  style: "percent",
+  maximumFractionDigits: 0,
+});
+
+/** Un porcentaje de 0 a 100 en formato español ("67 %"), o un guion si no hay valor. */
+export function formatearPorcentaje(porcentaje: number | null): string {
+  if (porcentaje === null || !Number.isFinite(porcentaje)) {
+    return SIN_VALOR;
+  }
+  return formatoPorcentaje.format(porcentaje / 100);
+}
+
+const formatoMes = new Intl.DateTimeFormat("es-ES", {
+  month: "long",
+  year: "numeric",
+  timeZone: ZONA_HORARIA,
+});
+
+/** El mes y el año de una fecha en la hora de España ("noviembre de 2026"). */
+export function formatearMes(fecha: Date): string {
+  if (Number.isNaN(fecha.getTime())) {
+    return SIN_VALOR;
+  }
+  return formatoMes.format(fecha);
+}
+
+const formatoEntero = new Intl.NumberFormat("es-ES", {
+  maximumFractionDigits: 0,
+  useGrouping: "always",
+});
+
+/** Un número entero en formato español, con separador de miles ("1.234"). */
+export function formatearEntero(n: number): string {
+  if (!Number.isFinite(n)) {
+    return SIN_VALOR;
+  }
+  return formatoEntero.format(n);
+}
+
+/** Una cantidad con su nombre en singular o en plural ("1 cliente", "3 clientes"). */
+export function formatearCantidad(
+  cantidad: number,
+  singular: string,
+  plural: string,
+): string {
+  return `${formatearEntero(cantidad)} ${cantidad === 1 ? singular : plural}`;
 }
