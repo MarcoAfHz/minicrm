@@ -53,3 +53,14 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
   5. comprobar que el panel lo refleja;
   6. borrar lo creado.
 - El mismo flujo a 375 px de ancho (móvil). Sin sesión, `/panel` lleva a `/login`.
+
+## [ ] 8. Diseño visual (estilo SaaS)
+Pedido por el humano después de probar la app: "siento que está feo".
+- Color de marca índigo y una paleta definida en un solo sitio (tokens de Tailwind 4 en `globals.css` con `@theme`).
+- Escritorio: barra lateral oscura con logo, iconos (lucide-react) y Panel · Clientes · Oportunidades, con el activo resaltado. Abajo, el usuario con un avatar de iniciales y "Salir".
+- Móvil (375 px): cabecera compacta con menú desplegable o barra de navegación inferior, sin scroll horizontal.
+- Tarjetas con sombra suave y bordes redondeados. Tarjetas del panel con icono y color.
+- Colores por etapa coherentes en el tablero, el embudo y las etiquetas. Avatares con las iniciales de cada cliente.
+- Login a dos columnas: panel de marca con el nombre de la app y una frase, y el formulario. En el móvil, solo el formulario.
+- Botones, inputs y focos visibles y consistentes (accesibilidad: contraste AA y `focus-visible`).
+- Sin cambiar textos, rutas ni lógica: los tests y la e2e se basan en ellos.
