@@ -19,7 +19,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - Borrar con confirmación.
 - `/clientes/[id]`: ficha del cliente con sus datos y sus oportunidades.
 
-## [ ] 3. Oportunidades y embudo
+## [x] 3. Oportunidades y embudo (registro 03)
 - Migración de la tabla `oportunidades`: id, owner_id, cliente_id (FK a clientes, on delete cascade), titulo, importe numeric(12,2) >= 0, etapa (nuevo, contactado, propuesta, ganada, perdida), fecha_cierre_prevista, created_at. RLS con sus 4 políticas.
 - `/oportunidades`: tablero con una columna por etapa, el número de oportunidades y el importe total de cada columna.
 - Crear y editar una oportunidad (con el cliente elegido de un desplegable) y cambiarla de etapa desde la tarjeta.

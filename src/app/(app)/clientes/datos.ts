@@ -1,6 +1,6 @@
 import { filtroBusquedaClientes } from "@/lib/busqueda";
 import { crearSupabaseServidor } from "@/lib/supabase/server";
-import type { Cliente, ClienteResumen } from "@/lib/tipos";
+import type { Cliente, ClienteOpcion, ClienteResumen } from "@/lib/tipos";
 import { esIdCliente } from "@/lib/validacion/cliente";
 
 // Lecturas de clientes para los Server Components. RLS ya filtra por usuario:
@@ -50,4 +50,39 @@ export async function obtenerCliente(
     throw new Error(ERROR_LECTURA);
   }
   return data;
+}
+
+/** Clientes del usuario para elegir en el desplegable de una oportunidad, por nombre. */
+export async function listarOpcionesClientes(
+  ownerId: string,
+): Promise<ClienteOpcion[]> {
+  const supabase = await crearSupabaseServidor();
+  const { data, error } = await supabase
+    .from("clientes")
+    .select("id, nombre, empresa")
+    // Segunda defensa además de RLS: solo clientes del usuario.
+    .eq("owner_id", ownerId)
+    .order("nombre", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(ERROR_LECTURA);
+  }
+  return data;
+}
+
+/** Si el usuario tiene al menos un cliente. */
+export async function tieneClientes(ownerId: string): Promise<boolean> {
+  const supabase = await crearSupabaseServidor();
+  const { data, error } = await supabase
+    .from("clientes")
+    .select("id")
+    // Segunda defensa además de RLS: solo clientes del usuario.
+    .eq("owner_id", ownerId)
+    .limit(1);
+
+  if (error) {
+    throw new Error(ERROR_LECTURA);
+  }
+  return data.length > 0;
 }

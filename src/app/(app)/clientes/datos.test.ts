@@ -11,6 +11,8 @@ function consulta() {
   const builder = {
     select: () => anotar("select"),
     eq: (columna: string, valor: string) => anotar(`eq ${columna} ${valor}`),
+    order: (columna: string) => anotar(`order ${columna}`),
+    limit: (cantidad: number) => anotar(`limit ${cantidad}`),
     maybeSingle: () => anotar("maybeSingle"),
     then: (resolver: (valor: RespuestaBd) => unknown) =>
       Promise.resolve(respuestaBd).then(resolver),
@@ -26,7 +28,9 @@ vi.mock("@/lib/supabase/server", () => ({
   crearSupabaseServidor: async () => ({ from }),
 }));
 
-const { obtenerCliente } = await import("./datos");
+const { listarOpcionesClientes, obtenerCliente, tieneClientes } = await import(
+  "./datos"
+);
 
 const ID = "3f2b8c1e-9d4a-4c6b-8e2f-1a2b3c4d5e6f";
 
@@ -66,6 +70,52 @@ describe("obtenerCliente", () => {
     respuestaBd = { data: null, error: { message: "permission denied" } };
 
     await expect(obtenerCliente(ID, "u1")).rejects.toThrow(
+      "No se han podido cargar los clientes.",
+    );
+  });
+});
+
+describe("listarOpcionesClientes", () => {
+  it("lee solo los clientes del usuario, por nombre", async () => {
+    const opciones = [{ id: ID, nombre: "Ana", empresa: null }];
+    respuestaBd = { data: opciones, error: null };
+
+    await expect(listarOpcionesClientes("u1")).resolves.toEqual(opciones);
+    expect(llamadas).toEqual([
+      "select",
+      "eq owner_id u1",
+      "order nombre",
+      "order created_at",
+    ]);
+  });
+
+  it("lanza un error genérico si falla la base de datos", async () => {
+    respuestaBd = { data: null, error: { message: "permission denied" } };
+
+    await expect(listarOpcionesClientes("u1")).rejects.toThrow(
+      "No se han podido cargar los clientes.",
+    );
+  });
+});
+
+describe("tieneClientes", () => {
+  it("es cierto si el usuario tiene algún cliente", async () => {
+    respuestaBd = { data: [{ id: ID }], error: null };
+
+    await expect(tieneClientes("u1")).resolves.toBe(true);
+    expect(llamadas).toEqual(["select", "eq owner_id u1", "limit 1"]);
+  });
+
+  it("es falso si no tiene ninguno", async () => {
+    respuestaBd = { data: [], error: null };
+
+    await expect(tieneClientes("u1")).resolves.toBe(false);
+  });
+
+  it("lanza un error genérico si falla la base de datos", async () => {
+    respuestaBd = { data: null, error: { message: "permission denied" } };
+
+    await expect(tieneClientes("u1")).rejects.toThrow(
       "No se han podido cargar los clientes.",
     );
   });

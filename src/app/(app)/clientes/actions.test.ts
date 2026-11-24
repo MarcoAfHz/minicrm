@@ -61,6 +61,12 @@ function formulario(campos: Record<string, string>): FormData {
   return formData;
 }
 
+function esperarRevalidacion() {
+  expect(revalidatePath).toHaveBeenCalledWith("/clientes", "layout");
+  expect(revalidatePath).toHaveBeenCalledWith("/oportunidades", "layout");
+  expect(revalidatePath).toHaveBeenCalledWith("/panel");
+}
+
 beforeEach(() => {
   getUser.mockReset();
   getUser.mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
@@ -109,7 +115,7 @@ describe("crearCliente", () => {
     expect(llamadas[0]).toBe(
       'insert {"nombre":"Ana","empresa":null,"email":null,"telefono":null,"notas":null}',
     );
-    expect(revalidatePath).toHaveBeenCalledWith("/clientes", "layout");
+    esperarRevalidacion();
   });
 
   it("no enseña el error interno de la base de datos", async () => {
@@ -176,7 +182,7 @@ describe("actualizarCliente", () => {
       "eq owner_id u1",
       "select id",
     ]);
-    expect(revalidatePath).toHaveBeenCalledWith("/clientes", "layout");
+    esperarRevalidacion();
   });
 });
 
@@ -210,7 +216,7 @@ describe("borrarCliente", () => {
       "eq owner_id u1",
       "select id",
     ]);
-    expect(revalidatePath).toHaveBeenCalledWith("/clientes", "layout");
+    esperarRevalidacion();
   });
 
   it("no enseña el error interno de la base de datos", async () => {

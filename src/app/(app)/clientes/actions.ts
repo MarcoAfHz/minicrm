@@ -15,6 +15,17 @@ const SIN_SESION = "Tu sesión ha caducado. Vuelve a iniciar sesión.";
 const REVISA_CAMPOS = "Revisa los campos marcados.";
 const NO_ENCONTRADO = "No se ha encontrado el cliente. Puede que ya se haya borrado.";
 
+/**
+ * Las páginas que muestran clientes: sus fichas y el listado, el tablero de
+ * oportunidades (nombre del cliente; al borrarlo se borran sus oportunidades)
+ * y el panel.
+ */
+function revalidarClientes() {
+  revalidatePath("/clientes", "layout");
+  revalidatePath("/oportunidades", "layout");
+  revalidatePath("/panel");
+}
+
 /** Crea un cliente y lleva a su ficha. */
 export async function crearCliente(
   _estadoAnterior: EstadoFormularioCliente | null,
@@ -52,7 +63,7 @@ export async function crearCliente(
     return { ok: false, error: errorGuardar, valores };
   }
 
-  revalidatePath("/clientes", "layout");
+  revalidarClientes();
   redirect(`/clientes/${id}`);
 }
 
@@ -105,7 +116,7 @@ export async function actualizarCliente(
     return { ok: false, error: errorGuardar, valores };
   }
 
-  revalidatePath("/clientes", "layout");
+  revalidarClientes();
   redirect(`/clientes/${id}`);
 }
 
@@ -148,6 +159,6 @@ export async function borrarCliente(
     return { ok: false, error: errorBorrar };
   }
 
-  revalidatePath("/clientes", "layout");
+  revalidarClientes();
   redirect("/clientes");
 }

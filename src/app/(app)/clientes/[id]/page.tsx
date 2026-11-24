@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { type ReactNode, Suspense } from "react";
-import { formatearFecha } from "@/lib/format";
+import { importeAEuros, sumarEnCurso, sumarGanado } from "@/lib/embudo";
+import { formatearEuros, formatearFecha } from "@/lib/format";
 import { requerirUsuario } from "@/lib/supabase/usuario";
-import type { Cliente } from "@/lib/tipos";
+import type { Cliente, OportunidadResumen } from "@/lib/tipos";
+import { listarOportunidadesDeCliente } from "../../oportunidades/datos";
+import { EtiquetaEtapa } from "../../oportunidades/etiqueta-etapa";
 import { BotonBorrarCliente } from "../boton-borrar-cliente";
 import { obtenerCliente } from "../datos";
 
@@ -33,7 +36,10 @@ export default function PaginaCliente({ params }: Props) {
 async function Ficha({ params }: Props) {
   const usuario = await requerirUsuario();
   const { id } = await params;
-  const cliente = await obtenerCliente(id, usuario.id);
+  const [cliente, oportunidades] = await Promise.all([
+    obtenerCliente(id, usuario.id),
+    listarOportunidadesDeCliente(id, usuario.id),
+  ]);
   if (!cliente) {
     notFound();
   }
@@ -62,24 +68,110 @@ async function Ficha({ params }: Props) {
 
       <DatosCliente cliente={cliente} />
 
-      <section aria-labelledby="titulo-oportunidades" className="flex flex-col gap-3">
+      <OportunidadesCliente
+        clienteId={cliente.id}
+        oportunidades={oportunidades}
+      />
+    </div>
+  );
+}
+
+function OportunidadesCliente({
+  clienteId,
+  oportunidades,
+}: {
+  clienteId: string;
+  oportunidades: OportunidadResumen[];
+}) {
+  const rutaNueva = `/oportunidades/nueva?cliente=${clienteId}`;
+
+  return (
+    <section
+      aria-labelledby="titulo-oportunidades"
+      className="flex flex-col gap-3"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h2
           id="titulo-oportunidades"
           className="text-lg font-semibold text-zinc-900"
         >
           Oportunidades
         </h2>
+        {oportunidades.length > 0 ? (
+          <Link
+            href={rutaNueva}
+            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            Nueva oportunidad
+          </Link>
+        ) : null}
+      </div>
+
+      {oportunidades.length > 0 ? (
+        <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <div className="flex gap-1">
+            <dt className="text-zinc-600">En curso:</dt>
+            <dd className="font-semibold text-zinc-900">
+              {formatearEuros(sumarEnCurso(oportunidades))}
+            </dd>
+          </div>
+          <div className="flex gap-1">
+            <dt className="text-zinc-600">Ganado:</dt>
+            <dd className="font-semibold text-zinc-900">
+              {formatearEuros(sumarGanado(oportunidades))}
+            </dd>
+          </div>
+        </dl>
+      ) : null}
+
+      {oportunidades.length === 0 ? (
         <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-8 text-center">
           <p className="font-medium text-zinc-900">
             Este cliente aún no tiene oportunidades.
           </p>
           <p className="mt-1 text-sm text-zinc-600">
-            Cuando des de alta una oportunidad de venta para este cliente,
-            aparecerá aquí.
+            Pulsa «Nueva oportunidad» para registrar una venta en curso con
+            este cliente.
           </p>
+          <Link
+            href={rutaNueva}
+            className="mt-4 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            Nueva oportunidad
+          </Link>
         </div>
-      </section>
-    </div>
+      ) : (
+        <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+          {oportunidades.map((oportunidad) => (
+            <li
+              key={oportunidad.id}
+              className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+            >
+              <div className="flex min-w-0 flex-col gap-1">
+                <Link
+                  href={`/oportunidades/${oportunidad.id}/editar?volver=cliente`}
+                  className="break-words font-medium text-zinc-900 hover:underline"
+                >
+                  <span className="sr-only">Editar </span>
+                  {oportunidad.titulo}
+                </Link>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-600">
+                  <EtiquetaEtapa etapa={oportunidad.etapa} />
+                  <span>
+                    {oportunidad.fecha_cierre_prevista
+                      ? `Cierre previsto: ${formatearFecha(oportunidad.fecha_cierre_prevista)}`
+                      : "Sin fecha de cierre prevista"}
+                  </span>
+                </div>
+              </div>
+              <p className="shrink-0 font-semibold text-zinc-900 sm:text-right">
+                {formatearEuros(importeAEuros(oportunidad.importe))}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

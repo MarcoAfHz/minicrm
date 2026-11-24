@@ -1,4 +1,9 @@
-import type { Cliente, DatosCliente } from "@/lib/tipos";
+import type {
+  Cliente,
+  DatosCliente,
+  DatosOportunidad,
+  Oportunidad,
+} from "@/lib/tipos";
 
 /**
  * Esquema de la base de datos para tipar el cliente de Supabase (D2).
@@ -17,6 +22,32 @@ export type BaseDatos = {
         };
         Update: Partial<Cliente>;
         Relationships: [];
+      };
+      oportunidades: {
+        Row: Oportunidad;
+        Insert: DatosOportunidad & {
+          id?: string;
+          owner_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          DatosOportunidad & {
+            id: string;
+            owner_id: string;
+            created_at: string;
+            updated_at: string;
+          }
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "oportunidades_cliente_id_fkey";
+            columns: ["cliente_id"];
+            isOneToOne: false;
+            referencedRelation: "clientes";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: Record<never, never>;

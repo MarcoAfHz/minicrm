@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { ResultadoFormulario } from "@/lib/resultado";
 import type { DatosCliente } from "@/lib/tipos";
+import { caracteres, leerTexto, textoRecortado, vacioANull } from "./comun";
 
 export const CAMPOS_CLIENTE = [
   "nombre",
@@ -34,22 +35,6 @@ export const LIMITES_CLIENTE = {
 } as const;
 
 const PATRON_TELEFONO = /^[0-9+()\s.-]*$/;
-
-/** Acepta un texto, null o nada; quita los espacios de alrededor. */
-const textoRecortado = z
-  .string()
-  .nullish()
-  .transform((valor) => (valor ?? "").trim());
-
-const vacioANull = (valor: string): string | null =>
-  valor === "" ? null : valor;
-
-/**
- * Longitud en caracteres (code points), como `char_length` de PostgreSQL.
- * `.length` cuenta unidades UTF-16: un emoji contaría 2 y el formulario y los
- * `check` de la migración no medirían igual.
- */
-const caracteres = (valor: string): number => [...valor].length;
 
 function maxCaracteres(max: number, mensaje: string) {
   return z.string().refine((valor) => caracteres(valor) <= max, {
@@ -118,10 +103,7 @@ export function esIdCliente(valor: unknown): valor is string {
 export function leerFormularioCliente(
   formData: FormData,
 ): ValoresFormularioCliente {
-  const leer = (campo: CampoCliente): string => {
-    const valor = formData.get(campo);
-    return typeof valor === "string" ? valor : "";
-  };
+  const leer = (campo: CampoCliente): string => leerTexto(formData, campo);
 
   return {
     nombre: leer("nombre"),
