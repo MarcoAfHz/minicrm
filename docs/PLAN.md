@@ -38,3 +38,18 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - `supabase/seed.sql` o un script con datos de ejemplo para el usuario de prueba.
 - Repaso de la interfaz en el móvil, títulos de página (`metadata`) y una página 404.
 - `README.md`: qué es, cómo funciona el equipo de agentes, cómo arrancarlo, URL pública y usuario de prueba.
+
+## [ ] 6. Integración continua
+- `.github/workflows/check.yml`: en cada push y pull request ejecuta `npm ci` y `npm run check` con Node 22, sin secretos.
+- Insignia del estado de CI en el README.
+
+## [ ] 7. Prueba de punta a punta en producción
+- Playwright (`e2e/`), lanzado con `npm run e2e` contra `E2E_BASE_URL`. Usuario y contraseña en `E2E_EMAIL` y `E2E_PASSWORD`, nunca escritos en el código.
+- Flujo:
+  1. entrar con el usuario de prueba;
+  2. crear un cliente;
+  3. crear una oportunidad para él;
+  4. moverla a "ganada";
+  5. comprobar que el panel lo refleja;
+  6. borrar lo creado.
+- El mismo flujo a 375 px de ancho (móvil). Sin sesión, `/panel` lleva a `/login`.
