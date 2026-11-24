@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { BaseDatos } from "./base-datos";
 import { ERROR_CONFIG_SUPABASE, leerConfigSupabase } from "./config";
 
 /**
@@ -15,7 +16,7 @@ export async function crearSupabaseServidor() {
     throw new Error(ERROR_CONFIG_SUPABASE);
   }
 
-  return createServerClient(config.url, config.clave, {
+  return createServerClient<BaseDatos>(config.url, config.clave, {
     cookies: {
       getAll() {
         return almacenCookies.getAll();

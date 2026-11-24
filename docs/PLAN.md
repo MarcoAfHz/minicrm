@@ -12,7 +12,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - `src/lib/format.ts` con `formatearEuros` y `formatearFecha` (es-ES), con tests.
 - `.env.example` con los nombres de las 2 variables.
 
-## [ ] 2. Clientes
+## [x] 2. Clientes (registro 02)
 - Migración de la tabla `clientes`: id, owner_id, nombre (obligatorio), empresa, email, teléfono, notas, created_at. RLS con sus 4 políticas.
 - `/clientes`: listado con buscador por nombre o empresa y estado vacío.
 - Crear y editar con un formulario validado con Zod (nombre de 2 a 100 caracteres; email válido si se rellena).
