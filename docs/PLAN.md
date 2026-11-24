@@ -39,7 +39,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - Repaso de la interfaz en el móvil, títulos de página (`metadata`) y una página 404.
 - `README.md`: qué es, cómo funciona el equipo de agentes, cómo arrancarlo, URL pública y usuario de prueba.
 
-## [ ] 6. Integración continua
+## [x] 6. Integración continua (registro 06)
 - `.github/workflows/check.yml`: en cada push y pull request ejecuta `npm ci` y `npm run check` con Node 22, sin secretos.
 - Insignia del estado de CI en el README.
 
