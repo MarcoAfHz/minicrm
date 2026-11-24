@@ -4,7 +4,7 @@ App para que un comercial o una pyme gestione sus **clientes** y sus **oportunid
 
 Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/registro/`).
 
-## [ ] 1. Base: sesión e inicio
+## [x] 1. Base: sesión e inicio (registro 01)
 - Clientes de Supabase para el servidor y para el navegador (`@supabase/ssr`), y un `proxy.ts` que refresque la sesión.
 - `/login` con email y contraseña, mensaje de error si falla y redirección a `/panel` si va bien.
 - Diseño de la zona privada `src/app/(app)/` con cabecera (nombre de la app, enlaces Panel · Clientes · Oportunidades, email del usuario y botón "Salir"). En el móvil los enlaces caben sin scroll horizontal.
