@@ -35,7 +35,7 @@ export function Cabecera({ email }: { email: string }) {
 
         <div className="flex min-w-0 items-center gap-3">
           <span
-            className="max-w-[45vw] truncate text-sm text-zinc-600 sm:max-w-xs"
+            className="max-w-[40vw] truncate text-sm text-zinc-600 sm:max-w-xs"
             title={email}
           >
             {email}

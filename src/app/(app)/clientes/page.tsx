@@ -35,9 +35,9 @@ export default function PaginaClientes({ searchParams }: Props) {
 }
 
 async function Listado({ searchParams }: Props) {
-  await requerirUsuario();
+  const usuario = await requerirUsuario();
   const busqueda = normalizarBusqueda((await searchParams).q);
-  const clientes = await listarClientes(busqueda);
+  const clientes = await listarClientes(busqueda, usuario.id);
 
   return (
     <div className="flex flex-col gap-4">

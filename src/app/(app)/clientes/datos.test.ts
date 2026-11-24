@@ -17,6 +17,7 @@ function consulta() {
       anotar(opciones ? `select ${JSON.stringify(opciones)}` : "select"),
     eq: (columna: string, valor: string) => anotar(`eq ${columna} ${valor}`),
     order: (columna: string) => anotar(`order ${columna}`),
+    or: (filtro: string) => anotar(`or ${filtro}`),
     limit: (cantidad: number) => anotar(`limit ${cantidad}`),
     maybeSingle: () => anotar("maybeSingle"),
     then: (resolver: (valor: RespuestaBd) => unknown) =>
@@ -33,8 +34,13 @@ vi.mock("@/lib/supabase/server", () => ({
   crearSupabaseServidor: async () => ({ from }),
 }));
 
-const { contarClientes, listarOpcionesClientes, obtenerCliente, tieneClientes } =
-  await import("./datos");
+const {
+  contarClientes,
+  listarClientes,
+  listarOpcionesClientes,
+  obtenerCliente,
+  tieneClientes,
+} = await import("./datos");
 
 const ID = "3f2b8c1e-9d4a-4c6b-8e2f-1a2b3c4d5e6f";
 
@@ -74,6 +80,44 @@ describe("obtenerCliente", () => {
     respuestaBd = { data: null, error: { message: "permission denied" } };
 
     await expect(obtenerCliente(ID, "u1")).rejects.toThrow(
+      "No se han podido cargar los clientes.",
+    );
+  });
+});
+
+describe("listarClientes", () => {
+  it("sin búsqueda, lee solo los clientes del usuario, por nombre", async () => {
+    const clientes = [
+      { id: ID, nombre: "Ana", empresa: null, email: null, telefono: null },
+    ];
+    respuestaBd = { data: clientes, error: null };
+
+    await expect(listarClientes("", "u1")).resolves.toEqual(clientes);
+    expect(llamadas).toEqual([
+      "select",
+      "eq owner_id u1",
+      "order nombre",
+      "order created_at",
+    ]);
+  });
+
+  it("con búsqueda, filtra por nombre o empresa y sigue filtrando por dueño", async () => {
+    respuestaBd = { data: [], error: null };
+
+    await expect(listarClientes("acme", "u1")).resolves.toEqual([]);
+    expect(llamadas).toEqual([
+      "select",
+      "eq owner_id u1",
+      "order nombre",
+      "order created_at",
+      'or nombre.ilike."%acme%",empresa.ilike."%acme%"',
+    ]);
+  });
+
+  it("lanza un error genérico si falla la base de datos", async () => {
+    respuestaBd = { data: null, error: { message: "permission denied" } };
+
+    await expect(listarClientes("", "u1")).rejects.toThrow(
       "No se han podido cargar los clientes.",
     );
   });

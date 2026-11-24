@@ -34,7 +34,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - Lista de las próximas 5 oportunidades abiertas por fecha de cierre prevista, marcando las que ya han vencido.
 - Los cálculos van en `src/lib/metricas.ts`, con tests, incluido el caso sin datos (sin dividir entre cero).
 
-## [ ] 5. Datos de demostración y pulido
+## [x] 5. Datos de demostración y pulido (registro 05)
 - `supabase/seed.sql` o un script con datos de ejemplo para el usuario de prueba.
 - Repaso de la interfaz en el móvil, títulos de página (`metadata`) y una página 404.
 - `README.md`: qué es, cómo funciona el equipo de agentes, cómo arrancarlo, URL pública y usuario de prueba.

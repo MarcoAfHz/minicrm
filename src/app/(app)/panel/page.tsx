@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { type ReactNode, Suspense } from "react";
 import { importeAEuros } from "@/lib/embudo";
 import {
@@ -43,8 +44,12 @@ async function Resumen() {
     listarOportunidadesPanel(usuario.id),
     contarClientes(usuario.id),
   ]);
-  // La página ya depende de la sesión (cookies), así que se calcula en cada
-  // petición: "ahora" es la hora real de la visita, no la del build.
+  // "Ahora" tiene que ser la hora real de la visita, no la de un prerender.
+  // Con Cache Components, leer la hora (new Date()) mientras Next prerenderiza
+  // da error aunque antes se hayan leído las cookies; connection() deja todo
+  // lo que sigue para la petición real. (crearSupabaseServidor ya lo llama,
+  // pero aquí queda explícito junto a la lectura de la hora.)
+  await connection();
   const ahora = new Date();
   const metricas = metricasPanel(oportunidades, clientes, ahora);
 

@@ -5,15 +5,21 @@ import { esIdCliente } from "@/lib/validacion/cliente";
 
 // Lecturas de clientes para los Server Components. RLS ya filtra por usuario:
 // cada consulta devuelve solo los clientes de quien ha iniciado sesión.
+// Además, cada consulta filtra por owner_id como segunda defensa.
 
 const ERROR_LECTURA = "No se han podido cargar los clientes.";
 
 /** Clientes del usuario ordenados por nombre, filtrados por nombre o empresa si hay búsqueda. */
-export async function listarClientes(busqueda: string): Promise<ClienteResumen[]> {
+export async function listarClientes(
+  busqueda: string,
+  ownerId: string,
+): Promise<ClienteResumen[]> {
   const supabase = await crearSupabaseServidor();
   let consulta = supabase
     .from("clientes")
     .select("id, nombre, empresa, email, telefono")
+    // Segunda defensa además de RLS: solo clientes del usuario.
+    .eq("owner_id", ownerId)
     .order("nombre", { ascending: true })
     .order("created_at", { ascending: true });
 

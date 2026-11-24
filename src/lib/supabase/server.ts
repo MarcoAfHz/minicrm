@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { BaseDatos } from "./base-datos";
 import { ERROR_CONFIG_SUPABASE, leerConfigSupabase } from "./config";
 
@@ -11,6 +12,11 @@ export async function crearSupabaseServidor() {
   // Primero las cookies: así la ruta pasa a ser dinámica y en el build
   // no se llega a leer la configuración.
   const almacenCookies = await cookies();
+  // Supabase Auth compara la caducidad del token con la hora actual
+  // (Date.now()). Con Cache Components eso da error si Next está
+  // prerenderizando, aunque ya se hayan leído las cookies: connection() deja
+  // la sesión y las consultas para la petición real del usuario.
+  await connection();
   const config = leerConfigSupabase();
   if (!config) {
     throw new Error(ERROR_CONFIG_SUPABASE);
