@@ -99,6 +99,23 @@ npm run check    # lint + tipos + tests + build (lo mismo que la CI)
 npm test         # solo los tests
 ```
 
+## Prueba de punta a punta
+
+Con [Playwright](https://playwright.dev), en `e2e/`. Recorre la app como un usuario: entra, crea un cliente (`E2E Cliente <marca de tiempo>`), le crea una oportunidad de 12.345,67 €, la mueve a «Ganada» en el tablero, comprueba que «Ganado este mes» del panel sube exactamente ese importe y borra el cliente (su oportunidad se borra en cascada). Lo hace dos veces: en escritorio y a 375 px de ancho (proyecto `movil`, con la barra de navegación inferior). También comprueba que, sin sesión, `/panel` lleva a `/login`.
+
+Variables de entorno (nunca se escriben en el código):
+
+- `E2E_BASE_URL`: la URL de la app. Por defecto, `http://localhost:3000`.
+- `E2E_EMAIL` y `E2E_PASSWORD`: el usuario con el que se entra. Si faltan, la prueba del flujo se salta y solo se ejecuta la de la sesión.
+
+```bash
+npx playwright install chromium   # la primera vez
+E2E_BASE_URL=https://minicrm-lovat.vercel.app E2E_EMAIL=... E2E_PASSWORD=... npm run e2e
+npm run e2e -- --project=movil    # solo el móvil
+```
+
+No deja datos: antes y después de cada prueba borra los clientes que empiecen por `E2E Cliente ` (por si una ejecución anterior falló a mitad). Los dos proyectos usan el mismo usuario y comparan las cifras del panel, así que se ejecutan de uno en uno. No forma parte de `npm run check` ni de la CI, porque necesita un usuario real.
+
 ## Seguridad
 
 - No hay claves en el repositorio. La app solo usa la URL del proyecto y la **publishable key** de Supabase, que se leen de variables de entorno. `.env.example` lleva solo los nombres.

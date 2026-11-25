@@ -43,7 +43,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
 - `.github/workflows/check.yml`: en cada push y pull request ejecuta `npm ci` y `npm run check` con Node 22, sin secretos.
 - Insignia del estado de CI en el README.
 
-## [ ] 7. Prueba de punta a punta en producción
+## [x] 7. Prueba de punta a punta en producción (registro 07)
 - Playwright (`e2e/`), lanzado con `npm run e2e` contra `E2E_BASE_URL`. Usuario y contraseña en `E2E_EMAIL` y `E2E_PASSWORD`, nunca escritos en el código.
 - Flujo:
   1. entrar con el usuario de prueba;
