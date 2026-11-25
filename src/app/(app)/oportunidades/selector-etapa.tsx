@@ -1,6 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
+import {
+  BOTON_SECUNDARIO_PEQUENO,
+  CAMPO_PEQUENO,
+} from "@/components/ui/clases";
 import { ETAPAS, ETIQUETAS_ETAPA } from "@/lib/embudo";
 import type { Etapa } from "@/lib/tipos";
 import { cambiarEtapa } from "./actions";
@@ -28,7 +32,7 @@ export function SelectorEtapa({ id, titulo, etapa }: Props) {
           name="etapa"
           required
           defaultValue=""
-          className="min-w-24 flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-base text-zinc-800 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 sm:text-sm"
+          className={`min-w-0 flex-1 basis-24 ${CAMPO_PEQUENO}`}
         >
           <option value="" disabled>
             Mover a…
@@ -42,7 +46,7 @@ export function SelectorEtapa({ id, titulo, etapa }: Props) {
         <button
           type="submit"
           disabled={enviando}
-          className="shrink-0 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-base font-medium text-zinc-800 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+          className={`shrink-0 ${BOTON_SECUNDARIO_PEQUENO}`}
         >
           {enviando ? "Moviendo…" : "Mover"}
         </button>

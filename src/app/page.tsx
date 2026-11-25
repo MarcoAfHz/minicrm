@@ -6,7 +6,7 @@ import { obtenerUsuario } from "@/lib/supabase/usuario";
 export default function Inicio() {
   return (
     <Suspense
-      fallback={<p className="px-4 py-6 text-sm text-zinc-600">Cargando…</p>}
+      fallback={<p className="px-4 py-6 text-sm text-texto-suave">Cargando…</p>}
     >
       <Redirigir />
     </Suspense>

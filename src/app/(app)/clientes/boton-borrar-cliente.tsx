@@ -1,6 +1,8 @@
 "use client";
 
+import { Trash } from "lucide-react";
 import { type SubmitEvent, useActionState } from "react";
+import { BOTON_PELIGRO } from "@/components/ui/clases";
 import { borrarCliente } from "./actions";
 
 type Props = { id: string; nombre: string };
@@ -21,11 +23,8 @@ export function BotonBorrarCliente({ id, nombre }: Props) {
   return (
     <form action={accion} onSubmit={confirmar} className="flex flex-col gap-2">
       <input type="hidden" name="id" value={id} />
-      <button
-        type="submit"
-        disabled={enviando}
-        className="rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" disabled={enviando} className={BOTON_PELIGRO}>
+        <Trash aria-hidden="true" className="size-4" />
         {enviando ? "Borrando…" : "Borrar"}
       </button>
       {estado && !estado.ok ? (

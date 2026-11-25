@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { Avatar } from "@/components/ui/avatar";
+import { ENLACE_VOLVER, TARJETA, TITULO_PAGINA } from "@/components/ui/clases";
 import { requerirUsuario } from "@/lib/supabase/usuario";
 import { obtenerCliente } from "../../datos";
 import { FormularioCliente } from "../../formulario-cliente";
@@ -15,7 +17,7 @@ type Props = { params: Promise<{ id: string }> };
 export default function PaginaEditarCliente({ params }: Props) {
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-      <Suspense fallback={<p className="text-zinc-600">Cargando…</p>}>
+      <Suspense fallback={<p className="text-texto-suave">Cargando…</p>}>
         <Edicion params={params} />
       </Suspense>
     </section>
@@ -32,16 +34,16 @@ async function Edicion({ params }: Props) {
 
   return (
     <>
-      <Link
-        href={`/clientes/${cliente.id}`}
-        className="self-start text-sm text-zinc-700 hover:text-zinc-950 hover:underline"
-      >
+      <Link href={`/clientes/${cliente.id}`} className={ENLACE_VOLVER}>
         ← Volver a la ficha
       </Link>
-      <h1 className="break-words text-2xl font-semibold text-zinc-900">
-        Editar «{cliente.nombre}»
-      </h1>
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6">
+      <div className="flex min-w-0 items-center gap-3">
+        <Avatar nombre={cliente.nombre} />
+        <h1 className={`min-w-0 break-words ${TITULO_PAGINA}`}>
+          Editar «{cliente.nombre}»
+        </h1>
+      </div>
+      <div className={`${TARJETA} p-4 sm:p-6`}>
         <FormularioCliente cliente={cliente} />
       </div>
     </>

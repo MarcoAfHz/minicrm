@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { type ReactNode, useActionState } from "react";
+import {
+  AVISO_ERROR,
+  BOTON_PRIMARIO,
+  BOTON_SECUNDARIO,
+  CAMPO,
+  ETIQUETA_CAMPO,
+} from "@/components/ui/clases";
 import { ETAPAS, ETIQUETAS_ETAPA } from "@/lib/embudo";
 import type { ClienteOpcion, Oportunidad } from "@/lib/tipos";
 import {
@@ -21,9 +28,6 @@ type Props = {
   /** Si es cierto, al guardar o cancelar se vuelve a la ficha del cliente. */
   volver?: boolean;
 };
-
-const claseCampo =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 aria-invalid:border-red-600";
 
 export function FormularioOportunidad({
   clientes,
@@ -65,7 +69,7 @@ export function FormularioOportunidad({
       defaultValue: valorInicial(campo),
       "aria-invalid": error ? true : undefined,
       "aria-describedby": error ? `${campo}-error` : undefined,
-      className: claseCampo,
+      className: CAMPO,
     };
   };
 
@@ -166,10 +170,7 @@ export function FormularioOportunidad({
       </div>
 
       {fallo ? (
-        <p
-          role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
+        <p role="alert" className={AVISO_ERROR}>
           {fallo.error}
         </p>
       ) : null}
@@ -177,14 +178,14 @@ export function FormularioOportunidad({
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Link
           href={rutaCancelar}
-          className="rounded-md border border-zinc-300 px-4 py-2 text-center font-medium text-zinc-800 hover:bg-zinc-100"
+          className={BOTON_SECUNDARIO}
         >
           Cancelar
         </Link>
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-md bg-zinc-900 px-4 py-2 font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className={BOTON_PRIMARIO}
         >
           {enviando
             ? "Guardando…"
@@ -215,8 +216,8 @@ function Campo({
   children,
 }: PropsCampo) {
   return (
-    <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={campo} className="text-sm font-medium text-zinc-800">
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <label htmlFor={campo} className={ETIQUETA_CAMPO}>
         {etiqueta}
         {obligatorio ? (
           <span className="text-red-700" aria-hidden="true">
@@ -224,12 +225,12 @@ function Campo({
             *
           </span>
         ) : (
-          <span className="font-normal text-zinc-500"> (opcional)</span>
+          <span className="font-normal text-texto-tenue"> (opcional)</span>
         )}
       </label>
       {children}
       {ayuda ? (
-        <p id={`${campo}-ayuda`} className="text-xs text-zinc-500">
+        <p id={`${campo}-ayuda`} className="text-xs text-texto-tenue">
           {ayuda}
         </p>
       ) : null}

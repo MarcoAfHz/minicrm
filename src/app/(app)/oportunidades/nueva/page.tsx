@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { Suspense } from "react";
+import {
+  BOTON_PRIMARIO,
+  ENLACE_VOLVER,
+  TARJETA,
+  TITULO_PAGINA,
+} from "@/components/ui/clases";
+import { EstadoVacio } from "@/components/ui/estado-vacio";
 import { requerirUsuario } from "@/lib/supabase/usuario";
 import { listarOpcionesClientes } from "../../clientes/datos";
 import { FormularioOportunidad } from "../formulario-oportunidad";
@@ -20,7 +28,7 @@ export default function PaginaNuevaOportunidad({ searchParams }: Props) {
         fallback={
           <>
             <Titulo />
-            <p className="text-zinc-600">Cargando…</p>
+            <p className="text-texto-suave">Cargando…</p>
           </>
         }
       >
@@ -43,21 +51,18 @@ async function Formulario({ searchParams }: Props) {
     return (
       <>
         <Titulo />
-        <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-10 text-center">
-          <p className="font-medium text-zinc-900">
+        <EstadoVacio icono={Users} amplio>
+          <p className="font-medium text-texto">
             Para crear una oportunidad, primero necesitas un cliente.
           </p>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-texto-suave">
             Cada oportunidad de venta pertenece a un cliente. Da de alta el
             primero y vuelve aquí.
           </p>
-          <Link
-            href="/clientes/nuevo"
-            className="mt-4 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-          >
+          <Link href="/clientes/nuevo" className={`mt-4 ${BOTON_PRIMARIO}`}>
             Nuevo cliente
           </Link>
-        </div>
+        </EstadoVacio>
       </>
     );
   }
@@ -66,14 +71,14 @@ async function Formulario({ searchParams }: Props) {
     <>
       <Link
         href={clienteInicial ? `/clientes/${clienteInicial}` : "/oportunidades"}
-        className="self-start text-sm text-zinc-700 hover:text-zinc-950 hover:underline"
+        className={ENLACE_VOLVER}
       >
         {clienteInicial
           ? "← Volver a la ficha del cliente"
           : "← Volver a oportunidades"}
       </Link>
       <Titulo />
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6">
+      <div className={`${TARJETA} p-4 sm:p-6`}>
         <FormularioOportunidad
           clientes={clientes}
           clienteInicial={clienteInicial}
@@ -86,6 +91,6 @@ async function Formulario({ searchParams }: Props) {
 
 function Titulo() {
   return (
-    <h1 className="text-2xl font-semibold text-zinc-900">Nueva oportunidad</h1>
+    <h1 className={TITULO_PAGINA}>Nueva oportunidad</h1>
   );
 }

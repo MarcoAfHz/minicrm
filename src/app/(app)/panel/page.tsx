@@ -1,7 +1,27 @@
+import {
+  CalendarClock,
+  type LucideIcon,
+  Percent,
+  SquareKanban,
+  TrendingUp,
+  Trophy,
+  Users,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { type ReactNode, Suspense } from "react";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  BOTON_PRIMARIO,
+  ENLACE,
+  ENLACE_EN_TEXTO,
+  TARJETA,
+  TITULO_PAGINA,
+  TITULO_SECCION,
+} from "@/components/ui/clases";
+import { EstadoVacio } from "@/components/ui/estado-vacio";
+import { COLORES_ETAPA, EtiquetaEtapa, PuntoEtapa } from "@/components/ui/etapa";
 import { importeAEuros } from "@/lib/embudo";
 import {
   formatearCantidad,
@@ -16,7 +36,6 @@ import { requerirUsuario } from "@/lib/supabase/usuario";
 import type { OportunidadPanel } from "@/lib/tipos";
 import { contarClientes } from "../clientes/datos";
 import { listarOportunidadesPanel } from "../oportunidades/datos";
-import { COLORES_ETAPA, EtiquetaEtapa } from "../oportunidades/etiqueta-etapa";
 
 export const metadata: Metadata = {
   title: "Panel",
@@ -25,18 +44,13 @@ export const metadata: Metadata = {
 export default function PaginaPanel() {
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">Panel</h1>
-      <Suspense fallback={<p className="text-zinc-600">Cargando…</p>}>
+      <h1 className={TITULO_PAGINA}>Panel</h1>
+      <Suspense fallback={<p className="text-texto-suave">Cargando…</p>}>
         <Resumen />
       </Suspense>
     </section>
   );
 }
-
-const ESTILO_BOTON =
-  "inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700";
-
-const ESTILO_ENLACE = "text-sm text-zinc-700 underline hover:text-zinc-950";
 
 async function Resumen() {
   const usuario = await requerirUsuario();
@@ -55,14 +69,16 @@ async function Resumen() {
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-zinc-600">
+      <p className="-mt-3 text-texto-suave">
         Hola, <span className="break-all">{usuario.email}</span>. Este es el
         resumen de tus clientes y oportunidades.
       </p>
 
-      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Tarjeta
           titulo="En curso"
+          icono={TrendingUp}
+          tono="marca"
           valor={formatearEuros(metricas.enCurso.total)}
           detalle={formatearCantidad(
             metricas.enCurso.cantidad,
@@ -72,6 +88,8 @@ async function Resumen() {
         />
         <Tarjeta
           titulo="Ganado este mes"
+          icono={Trophy}
+          tono="esmeralda"
           valor={formatearEuros(metricas.ganadoEsteMes.total)}
           detalle={`${formatearCantidad(
             metricas.ganadoEsteMes.cantidad,
@@ -81,14 +99,18 @@ async function Resumen() {
         />
         <Tarjeta
           titulo="Tasa de éxito"
+          icono={Percent}
+          tono="ambar"
           valor={formatearPorcentaje(metricas.tasaExito.porcentaje)}
           detalle={detalleTasaExito(metricas.tasaExito)}
         />
         <Tarjeta
           titulo="Clientes"
+          icono={Users}
+          tono="cielo"
           valor={formatearEntero(metricas.clientes)}
           detalle={
-            <Link href="/clientes" className={ESTILO_ENLACE}>
+            <Link href="/clientes" className={ENLACE}>
               Ver clientes
             </Link>
           }
@@ -120,22 +142,42 @@ function detalleTasaExito({ ganadas, perdidas, porcentaje }: TasaExito): string 
   )}`;
 }
 
+/** Color del círculo del icono de cada tarjeta (decorativo). */
+const TONOS = {
+  marca: "bg-marca-50 text-marca-600",
+  esmeralda: "bg-emerald-50 text-emerald-600",
+  ambar: "bg-amber-50 text-amber-600",
+  cielo: "bg-sky-50 text-sky-600",
+} as const;
+
 function Tarjeta({
   titulo,
+  icono: Icono,
+  tono,
   valor,
   detalle,
 }: {
   titulo: string;
+  icono: LucideIcon;
+  tono: keyof typeof TONOS;
   valor: string;
   detalle: ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-zinc-200 bg-white p-4">
-      <dt className="text-sm font-medium text-zinc-600">{titulo}</dt>
-      <dd className="break-words text-2xl font-semibold text-zinc-900">
+    <div className={`${TARJETA} flex min-w-0 flex-col gap-1 p-5`}>
+      <dt className="flex items-center justify-between gap-3 text-sm font-medium text-texto-suave">
+        {titulo}
+        <span
+          aria-hidden="true"
+          className={`inline-flex size-10 shrink-0 items-center justify-center rounded-full ${TONOS[tono]}`}
+        >
+          <Icono className="size-5" />
+        </span>
+      </dt>
+      <dd className="break-words text-2xl font-semibold tracking-tight text-texto sm:text-3xl">
         {valor}
       </dd>
-      <dd className="text-sm text-zinc-600">{detalle}</dd>
+      <dd className="text-sm text-texto-suave">{detalle}</dd>
     </div>
   );
 }
@@ -153,14 +195,11 @@ function ProximosCierres({
       className="flex min-w-0 flex-col gap-3 lg:col-span-3"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2
-          id="titulo-proximos-cierres"
-          className="text-lg font-semibold text-zinc-900"
-        >
+        <h2 id="titulo-proximos-cierres" className={TITULO_SECCION}>
           Próximos cierres
         </h2>
         {oportunidades.length > 0 ? (
-          <Link href="/oportunidades" className={ESTILO_ENLACE}>
+          <Link href="/oportunidades" className={ENLACE}>
             Ver todas
           </Link>
         ) : null}
@@ -169,49 +208,56 @@ function ProximosCierres({
       {oportunidades.length === 0 ? (
         <SinProximosCierres hayClientes={hayClientes} />
       ) : (
-        <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+        <ul className={`${TARJETA} divide-y divide-borde`}>
           {oportunidades.map((oportunidad) => (
             <li
               key={oportunidad.id}
-              className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+              className="flex gap-3 p-4 transition-colors hover:bg-fondo"
             >
-              <div className="flex min-w-0 flex-col gap-1">
-                <Link
-                  href={`/oportunidades/${oportunidad.id}/editar`}
-                  className="break-words font-medium text-zinc-900 hover:underline"
-                >
-                  <span className="sr-only">Editar </span>
-                  {oportunidad.titulo}
-                </Link>
-                {oportunidad.cliente ? (
+              <Avatar nombre={oportunidad.cliente?.nombre ?? ""} />
+              <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="flex min-w-0 flex-col gap-1">
                   <Link
-                    href={`/clientes/${oportunidad.cliente.id}`}
-                    className="max-w-full self-start break-words text-sm text-zinc-600 underline hover:text-zinc-950"
+                    href={`/oportunidades/${oportunidad.id}/editar`}
+                    className="self-start break-words rounded-sm font-medium text-texto hover:text-marca-700 hover:underline"
                   >
-                    {oportunidad.cliente.nombre}
+                    <span className="sr-only">Editar </span>
+                    {oportunidad.titulo}
                   </Link>
-                ) : (
-                  <span className="text-sm text-zinc-500">
-                    Cliente no disponible
-                  </span>
-                )}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-600">
-                  <EtiquetaEtapa etapa={oportunidad.etapa} />
-                  <span>
-                    {oportunidad.fecha_cierre_prevista
-                      ? `Cierre previsto: ${formatearFecha(oportunidad.fecha_cierre_prevista)}`
-                      : "Sin fecha de cierre prevista"}
-                  </span>
-                  {oportunidad.vencida ? (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
-                      Vencida
+                  {oportunidad.cliente ? (
+                    <Link
+                      href={`/clientes/${oportunidad.cliente.id}`}
+                      className={`max-w-full self-start break-words text-sm text-texto-suave ${ENLACE_EN_TEXTO}`}
+                    >
+                      {oportunidad.cliente.nombre}
+                    </Link>
+                  ) : (
+                    <span className="text-sm text-texto-tenue">
+                      Cliente no disponible
                     </span>
-                  ) : null}
+                  )}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-texto-suave">
+                    <EtiquetaEtapa etapa={oportunidad.etapa} />
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarClock
+                        aria-hidden="true"
+                        className="size-4 shrink-0 text-texto-tenue"
+                      />
+                      {oportunidad.fecha_cierre_prevista
+                        ? `Cierre previsto: ${formatearFecha(oportunidad.fecha_cierre_prevista)}`
+                        : "Sin fecha de cierre prevista"}
+                    </span>
+                    {oportunidad.vencida ? (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
+                        Vencida
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
+                <p className="shrink-0 break-words font-semibold text-texto sm:text-right">
+                  {formatearEuros(importeAEuros(oportunidad.importe))}
+                </p>
               </div>
-              <p className="shrink-0 break-words font-semibold text-zinc-900 sm:text-right">
-                {formatearEuros(importeAEuros(oportunidad.importe))}
-              </p>
             </li>
           ))}
         </ul>
@@ -222,38 +268,37 @@ function ProximosCierres({
 
 function SinProximosCierres({ hayClientes }: { hayClientes: boolean }) {
   return (
-    <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-8 text-center">
-      <p className="font-medium text-zinc-900">
-        No tienes oportunidades abiertas.
-      </p>
+    <EstadoVacio icono={CalendarClock}>
+      <p className="font-medium text-texto">No tienes oportunidades abiertas.</p>
       {hayClientes ? (
         <>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-texto-suave">
             Pulsa «Nueva oportunidad» para registrar una venta en curso y ver
             aquí cuándo está previsto cerrarla.
           </p>
-          <Link href="/oportunidades/nueva" className={`mt-4 ${ESTILO_BOTON}`}>
+          <Link href="/oportunidades/nueva" className={`mt-4 ${BOTON_PRIMARIO}`}>
             Nueva oportunidad
           </Link>
         </>
       ) : (
         <>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-texto-suave">
             Cada oportunidad pertenece a un cliente. Da de alta el primero y
             después crea su oportunidad.
           </p>
-          <Link href="/clientes/nuevo" className={`mt-4 ${ESTILO_BOTON}`}>
+          <Link href="/clientes/nuevo" className={`mt-4 ${BOTON_PRIMARIO}`}>
             Nuevo cliente
           </Link>
         </>
       )}
-    </div>
+    </EstadoVacio>
   );
 }
 
 /**
- * Barras horizontales hechas con CSS. El número y el importe de cada etapa
- * están escritos en texto: la barra es solo un apoyo visual (aria-hidden).
+ * Barras horizontales hechas con CSS, del color de cada etapa. El número y el
+ * importe de cada etapa están escritos en texto: la barra es solo un apoyo
+ * visual (aria-hidden).
  */
 function ResumenEmbudo({
   etapas,
@@ -267,19 +312,20 @@ function ResumenEmbudo({
       aria-labelledby="titulo-embudo"
       className="flex min-w-0 flex-col gap-3 lg:col-span-2"
     >
-      <h2 id="titulo-embudo" className="text-lg font-semibold text-zinc-900">
+      <h2 id="titulo-embudo" className={TITULO_SECCION}>
         Embudo por etapa
       </h2>
 
       {hayOportunidades ? (
-        <ul className="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-4">
+        <ul className={`${TARJETA} flex flex-col gap-5 p-5`}>
           {etapas.map((etapa) => (
-            <li key={etapa.etapa} className="flex flex-col gap-1.5">
+            <li key={etapa.etapa} className="flex flex-col gap-2">
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
-                <span className="font-medium text-zinc-900">
+                <span className="inline-flex items-center gap-2 font-medium text-texto">
+                  <PuntoEtapa etapa={etapa.etapa} />
                   {etapa.etiqueta}
                 </span>
-                <span className="break-words text-zinc-600">
+                <span className="break-words text-texto-suave">
                   {formatearCantidad(
                     etapa.cantidad,
                     "oportunidad",
@@ -290,7 +336,7 @@ function ResumenEmbudo({
               </div>
               <div
                 aria-hidden="true"
-                className="h-2 w-full overflow-hidden rounded-full bg-zinc-100"
+                className="h-2.5 w-full overflow-hidden rounded-full bg-superficie-hundida"
               >
                 <div
                   className={`h-full rounded-full ${COLORES_ETAPA[etapa.etapa].barra}`}
@@ -301,12 +347,12 @@ function ResumenEmbudo({
           ))}
         </ul>
       ) : (
-        <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-8 text-center">
-          <p className="text-sm text-zinc-600">
+        <EstadoVacio icono={SquareKanban}>
+          <p className="text-sm text-texto-suave">
             Cuando registres oportunidades, aquí verás cuántas hay en cada etapa
             y cuánto suman.
           </p>
-        </div>
+        </EstadoVacio>
       )}
     </section>
   );

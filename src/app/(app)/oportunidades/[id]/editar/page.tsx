@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { ENLACE_VOLVER, TARJETA, TITULO_PAGINA } from "@/components/ui/clases";
 import { requerirUsuario } from "@/lib/supabase/usuario";
 import { volverAlCliente } from "@/lib/validacion/oportunidad";
 import { listarOpcionesClientes } from "../../../clientes/datos";
@@ -21,7 +22,7 @@ type Props = {
 export default function PaginaEditarOportunidad(props: Props) {
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-      <Suspense fallback={<p className="text-zinc-600">Cargando…</p>}>
+      <Suspense fallback={<p className="text-texto-suave">Cargando…</p>}>
         <Edicion {...props} />
       </Suspense>
     </section>
@@ -46,14 +47,14 @@ async function Edicion({ params, searchParams }: Props) {
     <>
       <Link
         href={volver ? `/clientes/${oportunidad.cliente_id}` : "/oportunidades"}
-        className="self-start text-sm text-zinc-700 hover:text-zinc-950 hover:underline"
+        className={ENLACE_VOLVER}
       >
         {volver
           ? "← Volver a la ficha del cliente"
           : "← Volver a oportunidades"}
       </Link>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <h1 className="min-w-0 break-words text-2xl font-semibold text-zinc-900">
+        <h1 className={`min-w-0 break-words ${TITULO_PAGINA}`}>
           Editar «{oportunidad.titulo}»
         </h1>
         <div className="shrink-0">
@@ -64,7 +65,7 @@ async function Edicion({ params, searchParams }: Props) {
           />
         </div>
       </div>
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6">
+      <div className={`${TARJETA} p-4 sm:p-6`}>
         <FormularioOportunidad
           clientes={clientes}
           oportunidad={oportunidad}

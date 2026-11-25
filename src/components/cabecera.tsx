@@ -1,41 +1,27 @@
 import Link from "next/link";
+import { inicialesDeEmail } from "@/lib/avatar";
 import { BotonSalir } from "./boton-salir";
+import { Avatar } from "./ui/avatar";
+import { Logo } from "./ui/logo";
 
-const enlaces = [
-  { href: "/panel", texto: "Panel" },
-  { href: "/clientes", texto: "Clientes" },
-  { href: "/oportunidades", texto: "Oportunidades" },
-] as const;
-
+/**
+ * Cabecera compacta del móvil y la tableta (en escritorio está la barra
+ * lateral). Los enlaces de las secciones van en la barra inferior.
+ */
 export function Cabecera({ email }: { email: string }) {
   return (
-    <header className="border-b border-zinc-200 bg-white">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
-        <Link href="/panel" className="text-lg font-semibold text-zinc-900">
-          Mini CRM
+    <header className="sticky top-0 z-30 border-b border-borde bg-superficie/95 pt-[env(safe-area-inset-top)] backdrop-blur lg:hidden">
+      <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href="/panel" className="shrink-0 rounded-lg">
+          <Logo />
         </Link>
 
-        <nav
-          aria-label="Principal"
-          className="order-last w-full sm:order-none sm:w-auto sm:flex-1"
-        >
-          <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {enlaces.map((enlace) => (
-              <li key={enlace.href}>
-                <Link
-                  href={enlace.href}
-                  className="font-medium text-zinc-700 hover:text-zinc-950 hover:underline"
-                >
-                  {enlace.texto}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <Avatar nombre={email} texto={inicialesDeEmail(email)} tamano="sm" />
+          {/* En el móvil no cabe: solo lo oyen los lectores de pantalla. */}
+          <span className="sr-only sm:hidden">{email}</span>
           <span
-            className="max-w-[40vw] truncate text-sm text-zinc-600 sm:max-w-xs"
+            className="hidden max-w-56 truncate text-sm text-texto-suave sm:block"
             title={email}
           >
             {email}

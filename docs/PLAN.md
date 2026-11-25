@@ -54,7 +54,7 @@ Estado: `[ ]` pendiente · `[x]` hecha (con el número de su registro en `docs/r
   6. borrar lo creado.
 - El mismo flujo a 375 px de ancho (móvil). Sin sesión, `/panel` lleva a `/login`.
 
-## [ ] 8. Diseño visual (estilo SaaS)
+## [x] 8. Diseño visual (estilo SaaS) (registro 08)
 Pedido por el humano después de probar la app: "siento que está feo".
 - Color de marca índigo y una paleta definida en un solo sitio (tokens de Tailwind 4 en `globals.css` con `@theme`).
 - Escritorio: barra lateral oscura con logo, iconos (lucide-react) y Panel · Clientes · Oportunidades, con el activo resaltado. Abajo, el usuario con un avatar de iniciales y "Salir".
