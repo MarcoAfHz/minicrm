@@ -6,7 +6,7 @@ CRM sencillo para que un comercial o una pyme gestione sus clientes y sus oportu
 
 ## Demo
 
-- **URL:** https://minicrm-PENDIENTE.vercel.app
+- **URL:** https://minicrm-lovat.vercel.app
 - **Usuario de prueba:** `demo@minicrm.app`
 - **Contraseña:** (se indica en la entrega)
 
